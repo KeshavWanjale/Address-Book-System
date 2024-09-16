@@ -3,19 +3,44 @@ class Contact:
     Description:
         Represents a contact with personal information.
     '''
-    def __init__(self,irst_name, last_name, address, city, state, zip_code, phone, email) :
+    def __init__(self,first_name, last_name, address, city, state, zip_code, phone, email) :
         '''
         Description:
             Initializes a new Contact instance.
         '''
-        self.contact['first_name'] = input("Enter First Name: ")
-        self.contact['last_name'] = input("Enter Last Name: ")
-        self.contact['address'] = input("Enter Address: ")
-        self.contact['city'] = input("Enter City: ")
-        self.contact['state'] = input("Enter State: ")
-        self.contact['zip_code'] = input("Enter ZIP Code: ")
-        self.contact['phone'] = input("Enter Phone Number: ")
-        self.contact['email'] = input("Enter Email: ")
+        self.first_name = first_name
+        self.last_name = last_name
+        self.address = address
+        self.city = city
+        self.state = state
+        self.zip_code = zip_code
+        self.phone = phone
+        self.email = email
+
+    def update_contact(self, first_name=None, last_name=None, address=None, city=None, state=None, zip_code=None, phone=None, email=None):
+        if first_name:
+            self.first_name = first_name
+        if last_name:
+            self.last_name = last_name
+        if address:
+            self.address = address
+        if city:
+            self.city = city
+        if state:
+            self.state = state
+        if zip_code:
+            self.zip_code = zip_code
+        if phone:
+            self.phone = phone
+        if email:
+            self.email = email
+
+    def display_contact(self):
+        print("\nContact Details:")
+        print(f"Name: {self.first_name} {self.last_name}")
+        print(f"Address: {self.address}, {self.city}, {self.state} - {self.zip_code}")
+        print(f"Phone: {self.phone}")
+        print(f"Email: {self.email}\n")
 
 
 class AddressBook:
@@ -47,6 +72,39 @@ class AddressBook:
         self._contacts[full_name] = contact
         print("Contact added successfully.")
 
+    def find_contact_by_name(self, first_name, last_name):
+        for contact in self._contacts.values():
+            if contact.first_name.lower() == first_name.lower() and contact.last_name.lower() == last_name.lower():
+                return contact
+        return None
+
+    def edit_contact(self, first_name, last_name):
+        
+        contact = self.find_contact_by_name(first_name, last_name)
+        contact = self.find_contact_by_name(first_name, last_name)
+        if contact:
+            print("Contact found. Enter new details or press Enter to keep current value:")
+            new_first_name = input(f"First Name ({contact.first_name}): ") or contact.first_name
+            new_last_name = input(f"Last Name ({contact.last_name}): ") or contact.last_name
+            new_address = input(f"Address ({contact.address}): ") or contact.address
+            new_city = input(f"City ({contact.city}): ") or contact.city
+            new_state = input(f"State ({contact.state}): ") or contact.state
+            new_zip_code = input(f"ZIP Code ({contact.zip_code}): ") or contact.zip_code
+            new_phone = input(f"Phone ({contact.phone}): ") or contact.phone
+            new_email = input(f"Email ({contact.email}): ") or contact.email
+
+            contact.update_contact(new_first_name, new_last_name, new_address, new_city, new_state, new_zip_code, new_phone, new_email)
+            print("Contact updated successfully.")
+        else:
+            print("Contact not found.")
+
+    def display_all_contacts(self):
+        if not self._contacts:
+            print("No contacts in Address Book.")
+        else:
+            for contact in self._contacts.values():
+                contact.display_contact()
+
 
 class AddressBookMain:
     '''
@@ -66,8 +124,10 @@ class AddressBookMain:
             Displays the menu options to the user.
         '''
         print(f'{"-"*10} Select Option {"-"*10}')
-        print('1. Add Contact')
-        print('2. Exit')
+        print('1 - Add Contact')
+        print('2 - Edit Contact')
+        print('3 - Display All Contacts')
+        print('4 - Exit')
 
     def get_contact_details(self):
         '''
@@ -95,8 +155,14 @@ class AddressBookMain:
                 contact = self.get_contact_details()
                 self.address_book.add_contact(contact)
             elif choice == '2':
+                first_name = input("Enter First Name of contact to edit: ")
+                last_name = input("Enter Last Name of contact to edit: ")
+                self.address_book.edit_contact(first_name, last_name)
+            elif choice == '3': 
+                self.address_book.display_all_contacts()
+            elif choice == '4': 
                 print("Exiting Address Book Program")
-                break  
+                break 
             else:
                 print("Invalid option. Please try again.")
 
