@@ -353,8 +353,36 @@ class System:
 
         print(f"Total contacts found in state '{state}': {count}")
         return count
-
-
+    
+    def sort_by_name(self):
+        '''
+        Description:
+            Sorts and displays all contacts across all address books alphabetically by the contact's full name.
+        Parameters:
+            None
+        Return:
+            A sorted list of contacts from all address books.
+        '''
+        all_contacts = []
+        
+        # Gather all contacts from all address books
+        for book_name, address_book in self.address_books.items():
+            for contact in address_book._contacts.values():
+                all_contacts.append((book_name, contact))
+        
+        # Sort the contacts by first name and last name
+        sorted_contacts = sorted(all_contacts, key=lambda item: (item[1].first_name.lower(), item[1].last_name.lower()))
+        
+        # Display sorted contacts
+        if sorted_contacts:
+            print("All contacts sorted alphabetically by name across all address books:")
+            for book_name, contact in sorted_contacts:
+                print(f"\nFound in Address Book: {book_name}")
+                print(f"Name: {contact.first_name} {contact.last_name}\n"
+                      f"Address: {contact.address}, {contact.city}, {contact.state} - {contact.zip_code}\n"
+                      f"Phone: {contact.phone}\nEmail: {contact.email}\n")
+        else:
+            print("No contacts available in the system.")
 
 
 class AddressBookMain:
@@ -392,7 +420,8 @@ class AddressBookMain:
         print('6 - Search Contacts By State')
         print('7 - Count Contacts By City')
         print('8 - Count Contacts By State')
-        print('9 - Exit')
+        print('9 - Sort Contacts By Name')
+        print('10 - Exit')
 
     def address_book_menu(self, address_book):
         '''
@@ -488,6 +517,8 @@ class AddressBookMain:
                 state = input("Enter the name of the State to search for the contacts: ")
                 self.system.count_by_state(state)
             elif choice == '9':
+                self.system.sort_by_name()
+            elif choice == '10':
                 print("Exiting Address Book Program")
                 break 
             else:
