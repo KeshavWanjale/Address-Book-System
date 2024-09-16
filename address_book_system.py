@@ -190,6 +190,80 @@ class AddressBook:
                       f"Phone: {contact.phone}\n"
                       f"Email: {contact.email}\n")
 
+
+class System:
+    '''
+    Description:
+        Manages multiple Address Books by storing them in a dictionary.
+    '''
+
+    def __init__(self):
+        '''
+        Description:
+            Initializes an empty system to manage address books.
+        Parameters:
+            None
+        Return:
+            None
+        '''
+        self.address_books = {}
+
+    def create_address_book(self, name):
+        '''
+        Description:
+            Creates a new address book with the given name.
+        Parameters:
+            name: The unique name of the new address book.
+        Return:
+            None
+        '''
+        if name in self.address_books:
+            print(f"Address book '{name}' already exists.")
+        else:
+            self.address_books[name] = AddressBook()
+            print(f"Address book '{name}' created successfully.")
+
+    def get_address_book(self, name):
+        '''
+        Description:
+            Retrieves an address book by its name.
+        Parameters:
+            name: The name of the address book.
+        Return:
+            The address book if found, otherwise None.
+        '''
+        return self.address_books.get(name, None)
+
+    def list_address_books(self):
+        '''
+        Description:
+            Lists all available address books.
+        Parameters:
+            None
+        Return:
+            None
+        '''
+        if not self.address_books:
+            print("No address books available.")
+        else:
+            print("Available Address Books:")
+            for name in self.address_books:
+                print(f"- {name}")
+    def delete_address_book(self, name):
+        '''
+        Description:
+            Deletes an address book by its name.
+        Parameters:
+            name: The name of the address book to delete.
+        Return:
+            None
+        '''
+        if name in self.address_books:
+            del self.address_books[name]
+            print(f"Address book '{name}' deleted successfully.")
+        else:
+            print(f"Address book '{name}' not found.")
+
 class AddressBookMain:
     '''
     Description:
@@ -205,7 +279,8 @@ class AddressBookMain:
         Return:
             None
         '''
-        self.address_book = AddressBook()
+        self.system = System()
+        # self.address_book = AddressBook()
 
     def menu(self):
         '''
@@ -217,11 +292,39 @@ class AddressBookMain:
             None
         '''
         print(f'{"-"*10} Select Option {"-"*10}')
-        print('1 - Add Contact')
-        print('2 - Edit Contact')
-        print('3 - Remove Contact')
-        print('4 - Display All Contacts')
+        print('1 - Create New Address Book')
+        print('2 - Select Address Book')
+        print('3 - List All Address Books')
+        print('4 - Delete Address Book')
         print('5 - Exit')
+
+    def address_book_menu(self, address_book):
+        while True:
+            print(f'\nManaging Address Book: {address_book}')
+            print('1 - Add Contact')
+            print('2 - Edit Contact')
+            print('3 - Remove Contact')
+            print('4 - Display All Contacts')
+            print('5 - Go Back')
+
+            choice = input("Enter your option: ")
+            if choice == '1':
+                contact = self.get_contact_details()
+                self.system.get_address_book(address_book).add_contact(contact)
+            elif choice == '2':
+                first_name = input("Enter First Name of contact to edit: ")
+                last_name = input("Enter Last Name of contact to edit: ")
+                self.system.get_address_book(address_book).edit_contact(first_name, last_name)
+            elif choice == '3':
+                first_name = input("Enter First Name of contact to remove: ")
+                last_name = input("Enter Last Name of contact to remove: ")
+                self.system.get_address_book(address_book).remove_contact(first_name, last_name)
+            elif choice == '4': 
+                self.system.get_address_book(address_book).display_all_contacts()
+            elif choice == '5': 
+                break 
+            else:
+                print("Invalid option. Please try again.")
 
     def get_contact_details(self):
         '''
@@ -255,23 +358,20 @@ class AddressBookMain:
             self.menu()
             choice = input("Enter your option: ")
             if choice == '1':
-                while True:
-                    contact = self.get_contact_details()
-                    self.address_book.add_contact(contact)
-                    add_another = input("Would you like to add another contact? (y/n): ").lower()
-                    if add_another != 'y':
-                        break
+                book_name = input("Enter new Address Book name: ")
+                self.system.create_address_book(book_name)
             elif choice == '2':
-                first_name = input("Enter First Name of contact to edit: ")
-                last_name = input("Enter Last Name of contact to edit: ")
-                self.address_book.edit_contact(first_name, last_name)
+                book_name = input("Enter the name of the Address Book to select: ")
+                if self.system.get_address_book(book_name):
+                    self.address_book_menu(book_name)
+                else:
+                    print(f"Address book '{book_name}' not found.")
             elif choice == '3':
-                first_name = input("Enter First Name of contact to remove: ")
-                last_name = input("Enter Last Name of contact to remove: ")
-                self.address_book.remove_contact(first_name, last_name)
-            elif choice == '4': 
-                self.address_book.display_all_contacts()
-            elif choice == '5': 
+                self.system.list_address_books()
+            elif choice == '4':
+                book_name = input("Enter the name of the Address Book to delete: ")
+                self.system.delete_address_book(book_name)
+            elif choice == '5':
                 print("Exiting Address Book Program")
                 break 
             else:
