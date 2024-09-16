@@ -318,6 +318,44 @@ class System:
         else:
             print(f"No contacts found in state '{state}'.")
 
+    def count_by_city(self, city):
+        '''
+        Description:
+            Counts the number of contacts across all address books in a specific city.
+        Parameters:
+            city: The city to count contacts for.
+        Return:
+            The number of contacts found in the specified city.
+        '''
+        count = 0
+        for address_book in self.address_books.values():
+            for contact in address_book._contacts.values():
+                if contact.city.lower() == city.lower():
+                    count += 1
+
+        print(f"Total contacts found in city '{city}': {count}")
+        return count
+
+    def count_by_state(self, state):
+        '''
+        Description:
+            Counts the number of contacts across all address books in a specific state.
+        Parameters:
+            state: The state to count contacts for.
+        Return:
+            The number of contacts found in the specified state.
+        '''
+        count = 0
+        for address_book in self.address_books.values():
+            for contact in address_book._contacts.values():
+                if contact.state.lower() == state.lower():
+                    count += 1
+
+        print(f"Total contacts found in state '{state}': {count}")
+        return count
+
+
+
 
 class AddressBookMain:
     '''
@@ -352,7 +390,9 @@ class AddressBookMain:
         print('4 - Delete Address Book')
         print('5 - Search Contacts By City')
         print('6 - Search Contacts By State')
-        print('7 - Exit')
+        print('7 - Count Contacts By City')
+        print('8 - Count Contacts By State')
+        print('9 - Exit')
 
     def address_book_menu(self, address_book):
         '''
@@ -439,9 +479,15 @@ class AddressBookMain:
                 city = input("Enter the name of the City to search for the contacts: ")
                 self.system.search_by_city(city)
             elif choice == '6':
-                state = input("Enter the name of the City to search for the contacts: ")
+                state = input("Enter the name of the State to search for the contacts: ")
                 self.system.search_by_state(state)
             elif choice == '7':
+                city = input("Enter the name of the City to search for the contacts: ")
+                self.system.count_by_city(city)
+            elif choice == '8':
+                state = input("Enter the name of the State to search for the contacts: ")
+                self.system.count_by_state(state)
+            elif choice == '9':
                 print("Exiting Address Book Program")
                 break 
             else:
