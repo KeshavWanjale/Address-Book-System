@@ -73,7 +73,7 @@ class AddressBook:
     def __init__(self):
         '''
         Description:
-            Initializes an empty AddressBook.
+            Initializes an empty contact dictionary.
         Parameters:
             None
         Return:
@@ -102,8 +102,11 @@ class AddressBook:
             None
         '''
         full_name = self.get_full_name(contact)
-        self._contacts[full_name] = contact
-        print("Contact added successfully.")
+        if full_name in self._contacts:
+            print(f"Contact with name '{contact.first_name} {contact.last_name}' already exists.")
+        else:
+            self._contacts[full_name] = contact
+            print("Contact added successfully.")
 
     def find_contact_by_name(self, first_name, last_name):
         '''
