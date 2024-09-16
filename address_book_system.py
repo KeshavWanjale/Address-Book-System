@@ -273,7 +273,7 @@ class System:
         Description:
             Searches for contacts across all address books by city or state.
         Parameters:
-            city: The city to search for (optional).
+            city: The city to search for
         Return:
             A list of contacts matching the search criteria.
         '''
@@ -292,6 +292,31 @@ class System:
                       f"Phone: {contact.phone}\nEmail: {contact.email}\n")
         else:
             print(f"No contacts found in city '{city}'.")
+
+    def search_by_state(self,state):
+        '''
+        Description:
+            Searches for contacts across all address books by state.
+        Parameters:
+            state: The state to search for
+        Return:
+            A list of contacts matching the search criteria.
+        '''
+        result = []
+        for book_name, address_book in self.address_books.items():
+            for contact in address_book._contacts.values():
+                if (contact.state.lower() == state.lower()):
+                    result.append((book_name,contact))
+        
+        if result:
+            print(f"Search results for state '{state}': ")
+            for book_name, contact in result:
+                print(f"\nFound in Address Book: {book_name}")
+                print(f"Name: {contact.first_name} {contact.last_name}\n"
+                      f"Address: {contact.address}, {contact.city}, {contact.state} - {contact.zip_code}\n"
+                      f"Phone: {contact.phone}\nEmail: {contact.email}\n")
+        else:
+            print(f"No contacts found in state '{state}'.")
 
 
 class AddressBookMain:
@@ -325,8 +350,9 @@ class AddressBookMain:
         print('2 - Select Address Book')
         print('3 - List All Address Books')
         print('4 - Delete Address Book')
-        print('5 - Search contacts by City')
-        print('6 - Exit')
+        print('5 - Search Contacts By City')
+        print('6 - Search Contacts By State')
+        print('7 - Exit')
 
     def address_book_menu(self, address_book):
         '''
@@ -413,6 +439,9 @@ class AddressBookMain:
                 city = input("Enter the name of the City to search for the contacts: ")
                 self.system.search_by_city(city)
             elif choice == '6':
+                state = input("Enter the name of the City to search for the contacts: ")
+                self.system.search_by_state(state)
+            elif choice == '7':
                 print("Exiting Address Book Program")
                 break 
             else:
