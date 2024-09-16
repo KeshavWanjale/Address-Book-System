@@ -273,19 +273,18 @@ class AddressBookMain:
     def __init__(self):
         ''' 
         Description:
-            Initializes the AddressBookMain with an empty AddressBook.
+            The main class for running the Address Book application, supporting multiple address books.
         Parameters:
             None
         Return:
             None
         '''
         self.system = System()
-        # self.address_book = AddressBook()
 
     def menu(self):
         '''
         Description:
-            Displays the menu options to the user.
+            Displays the menu options for managing the address books to the user.
         Parameters:
             None
         Return:
@@ -299,6 +298,14 @@ class AddressBookMain:
         print('5 - Exit')
 
     def address_book_menu(self, address_book):
+        '''
+        Description:
+            Displays the menu options for managing the contacts in address book to the user.
+        Parameters:
+            address_book : address book selected by user
+        Return:
+            None
+        '''
         while True:
             print(f'\nManaging Address Book: {address_book}')
             print('1 - Add Contact')
