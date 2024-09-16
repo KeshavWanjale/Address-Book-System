@@ -98,6 +98,14 @@ class AddressBook:
         else:
             print("Contact not found.")
 
+    def remove_contact(self,first_name,last_name):
+        full_name = f"{first_name} {last_name}".lower()
+        if full_name in self._contacts:
+            del self._contacts[full_name]
+            print(f"Contact {first_name} {last_name} removed successfully.")
+        else:
+            print("Contact not found.")
+    
     def display_all_contacts(self):
         if not self._contacts:
             print("No contacts in Address Book.")
@@ -126,8 +134,9 @@ class AddressBookMain:
         print(f'{"-"*10} Select Option {"-"*10}')
         print('1 - Add Contact')
         print('2 - Edit Contact')
-        print('3 - Display All Contacts')
-        print('4 - Exit')
+        print('3 - Remove Contact')
+        print('4 - Display All Contacts')
+        print('5 - Exit')
 
     def get_contact_details(self):
         '''
@@ -158,9 +167,13 @@ class AddressBookMain:
                 first_name = input("Enter First Name of contact to edit: ")
                 last_name = input("Enter Last Name of contact to edit: ")
                 self.address_book.edit_contact(first_name, last_name)
-            elif choice == '3': 
-                self.address_book.display_all_contacts()
+            elif choice == '3':
+                first_name = input("Enter First Name of contact to remove: ")
+                last_name = input("Enter Last Name of contact to remove: ")
+                self.address_book.remove_contact(first_name, last_name)
             elif choice == '4': 
+                self.address_book.display_all_contacts()
+            elif choice == '5': 
                 print("Exiting Address Book Program")
                 break 
             else:
