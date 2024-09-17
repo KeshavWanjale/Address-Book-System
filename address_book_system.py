@@ -1,5 +1,6 @@
-import csv
+import json
 import os
+
 
 class Contact:
     """
@@ -28,221 +29,173 @@ class Contact:
         self.phone = phone
         self.email = email
 
-    def to_list(self):
+    def to_dict(self):
         """
         Description:
-            Converts the contact details into a list format suitable for CSV writing.
+            Converts the Contact object to a dictionary.
         Return:
-            List[str]: List of contact details in string format.
+            dict: A dictionary representation of the Contact object.
         """
-        return [self.first_name, self.last_name, self.address, self.city, self.state, self.zip_code, self.phone, self.email]
+        return {
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            'phone': self.phone,
+            'email': self.email
+        }
 
-    @staticmethod
-    def from_list(contact_list):
+    @classmethod
+    def from_dict(cls, data):
         """
         Description:
-            Creates a Contact object from a list of contact details.
+            Creates a Contact object from a dictionary.
         Parameters:
-            contact_list (List[str]): List of contact details in string format.
+            data (dict): A dictionary containing contact details.
         Return:
-            Contact: A Contact object initialized with the provided details.
+            Contact: A Contact object created from the dictionary.
         """
-        return Contact(*contact_list)
-
+        return cls(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            address=data['address'],
+            city=data['city'],
+            state=data['state'],
+            zip_code=data['zip_code'],
+            phone=data['phone'],
+            email=data['email']
+        )
+    
 
 class AddressBook:
     """
     Description:
-        Manages a collection of contacts, with functionality to add, remove, update, and display contacts.
+        Represents an address book that stores contacts in a JSON file.
     Parameters:
-        file_name (str): The name of the CSV file used to store the address book data.
+        file_name (str): The name of the JSON file where contacts are stored.
     Return:
         None
     """
 
     def __init__(self, file_name):
         self.file_name = file_name
-        # Create the file if it doesn't exist
-        if not os.path.exists(self.file_name):
-            with open(self.file_name, 'w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['First Name', 'Last Name', 'Address', 'City', 'State', 'Zip Code', 'Phone', 'Email'])
+        self.contacts = self.load_contacts()
+
+    def load_contacts(self):
+        """
+        Description:
+            Loads contacts from the JSON file.
+        Return:
+            List[Contact]: A list of Contact objects.
+        """
+        try:
+            with open(self.file_name, 'r') as file:
+                data = json.load(file)
+                return [Contact(**contact) for contact in data]
+        except (FileNotFoundError, json.JSONDecodeError):
+            return []
+
+    def save_contacts(self):
+        """
+        Description:
+            Saves all contacts to the JSON file.
+        Return:
+            None
+        """
+        with open(self.file_name, 'w') as file:
+            json.dump([contact.to_dict() for contact in self.contacts], file, indent=4)
 
     def add_contact(self, contact):
         """
         Description:
-            Adds a new contact to the address book CSV file.
+            Adds a contact to the address book and saves it to the JSON file.
         Parameters:
-            contact (Contact): The contact to be added.
+            contact (Contact): The contact to add.
         Return:
             None
         """
-        with open(self.file_name, 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(contact.to_list())
-
-    def find_contact_by_name(self, first_name, last_name):
-        """
-        Description:
-            Searches for a contact by first name and last name in the address book CSV file.
-        Parameters:
-            first_name (str): The first name of the contact.
-            last_name (str): The last name of the contact.
-        Return:
-            Contact: The found contact, or None if not found.
-        """
-        with open(self.file_name, 'r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Skip header row
-            for row in reader:
-                contact = Contact.from_list(row)
-                if contact.first_name.lower() == first_name.lower() and contact.last_name.lower() == last_name.lower():
-                    return contact
-        return None
+        self.contacts.append(contact)
+        self.save_contacts()
 
     def remove_contact(self, first_name, last_name):
         """
         Description:
-            Removes a contact by first name and last name from the address book CSV file.
+            Removes a contact by first and last name from the address book and saves the updated list to the JSON file.
         Parameters:
-            first_name (str): The first name of the contact to be removed.
-            last_name (str): The last name of the contact to be removed.
+            first_name (str): The first name of the contact to remove.
+            last_name (str): The last name of the contact to remove.
         Return:
-            bool: True if the contact was removed, False otherwise.
+            bool: True if the contact was removed, False if not found.
         """
-        contacts = []
-        removed = False
-        with open(self.file_name, 'r') as file:
-            reader = csv.reader(file)
-            header = next(reader)  # Read header
-            contacts.append(header)  # Add header to new list
-            for row in reader:
-                contact = Contact.from_list(row)
-                if contact.first_name.lower() == first_name.lower() and contact.last_name.lower() == last_name.lower():
-                    removed = True
-                else:
-                    contacts.append(row)
-
-        with open(self.file_name, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(contacts)
-
-        return removed
-
-    def display_all_contacts(self):
-        """
-        Description:
-            Displays all contacts in the address book.
-        Return:
-            None
-        """
-        with open(self.file_name, 'r') as file:
-            reader = csv.reader(file)
-            header = next(reader)  # Skip header row
-            lines = list(reader)
-            if not lines:
-                print("No contacts in Address Book.")
-            else:
-                print("\nContacts:")
-                for row in lines:
-                    contact = Contact.from_list(row)
-                    print(f"\nContact Details:\n"
-                          f"Name: {contact.first_name} {contact.last_name}\n"
-                          f"Address: {contact.address}, {contact.city}, {contact.state} - {contact.zip_code}\n"
-                          f"Phone: {contact.phone}\n"
-                          f"Email: {contact.email}\n")
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                self.contacts.remove(contact)
+                self.save_contacts()
+                return True
+        return False
 
     def update_contact(self, first_name, last_name, new_contact):
         """
         Description:
-            Updates a contact with new details in the address book CSV file.
+            Updates a contact's information and saves the changes to the JSON file.
         Parameters:
-            first_name (str): The first name of the contact to be updated.
-            last_name (str): The last name of the contact to be updated.
-            new_contact (Contact): The new contact details.
+            first_name (str): The first name of the contact to update.
+            last_name (str): The last name of the contact to update.
+            new_contact (Contact): The new contact information.
         Return:
-            bool: True if the contact was updated, False otherwise.
+            bool: True if the contact was updated, False if not found.
         """
-        contacts = []
-        updated = False
-        with open(self.file_name, 'r') as file:
-            reader = csv.reader(file)
-            header = next(reader)  # Read header
-            contacts.append(header)  # Add header to new list
-            for row in reader:
-                contact = Contact.from_list(row)
-                if contact.first_name.lower() == first_name.lower() and contact.last_name.lower() == last_name.lower():
-                    contacts.append(new_contact.to_list())
-                    updated = True
-                else:
-                    contacts.append(row)
+        for i, contact in enumerate(self.contacts):
+            if contact.first_name == first_name and contact.last_name == last_name:
+                self.contacts[i] = new_contact
+                self.save_contacts()
+                return True
+        return False
 
-        with open(self.file_name, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerows(contacts)
-
-        return updated
+    def find_contact_by_name(self, first_name, last_name):
+        """
+        Description:
+            Finds a contact by first and last name.
+        Parameters:
+            first_name (str): The first name of the contact.
+            last_name (str): The last name of the contact.
+        Return:
+            Contact: The contact if found, otherwise None.
+        """
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                return contact
+        return None
 
     def search_by_city(self, city):
         """
         Description:
-            Searches for contacts by city in the address book CSV file.
+            Searches for contacts by city.
         Parameters:
             city (str): The city to search for.
         Return:
-            List[Contact]: List of contacts found in the specified city.
+            List[Contact]: A list of contacts in the specified city.
         """
-        results = []
-        with open(self.file_name, 'r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Skip header row
-            for row in reader:
-                contact = Contact.from_list(row)
-                if contact.city.lower() == city.lower():
-                    results.append(contact)
-        return results
+        return [contact for contact in self.contacts if contact.city.lower() == city.lower()]
 
     def search_by_state(self, state):
         """
         Description:
-            Searches for contacts by state in the address book CSV file.
+            Searches for contacts by state.
         Parameters:
             state (str): The state to search for.
         Return:
-            List[Contact]: List of contacts found in the specified state.
+            List[Contact]: A list of contacts in the specified state.
         """
-        results = []
-        with open(self.file_name, 'r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Skip header row
-            for row in reader:
-                contact = Contact.from_list(row)
-                if contact.state.lower() == state.lower():
-                    results.append(contact)
-        return results
-
-    def sort_contacts(self, key):
-        """
-        Description:
-            Sorts contacts in the address book by a specified key.
-        Parameters:
-            key (str): The key by which to sort the contacts (e.g., 'first_name', 'city').
-        Return:
-            List[List[str]]: List of rows with sorted contacts, including the header row.
-        """
-        with open(self.file_name, 'r') as file:
-            reader = csv.reader(file)
-            header = next(reader)  # Read header
-            contacts = [Contact.from_list(row) for row in reader]
-
-        contacts.sort(key=lambda x: getattr(x, key).lower())
-        return [header] + [contact.to_list() for contact in contacts]  # Return sorted contacts with header
-
+        return [contact for contact in self.contacts if contact.state.lower() == state.lower()]
+    
 
 class AddressBookSystem:
     """
     Description:
-        Manages multiple address books, allowing users to create, list, delete address books and perform operations such as searching, counting, and sorting contacts across all address books.
+        Manages multiple address books, providing functionality to create, list, delete, and access individual address books.
     Parameters:
         None
     Return:
@@ -261,33 +214,34 @@ class AddressBookSystem:
         Return:
             None
         """
-        if name in self.address_books:
-            print(f"Address book '{name}' already exists.")
-        else:
-            file_name = f"{name}.csv"
-            self.address_books[name] = AddressBook(file_name)
+        if name not in self.address_books:
+            self.address_books[name] = AddressBook(f"{name}.json")
             print(f"Address book '{name}' created.")
+        else:
+            print(f"Address book '{name}' already exists.")
 
     def get_address_book(self, name):
         """
         Description:
             Retrieves an address book by its name.
         Parameters:
-            name (str): The name of the address book to retrieve.
+            name (str): The name of the address book.
         Return:
-            AddressBook: The address book with the specified name, or None if not found.
+            AddressBook: The address book if found, otherwise None.
         """
         return self.address_books.get(name)
 
     def list_address_books(self):
         """
         Description:
-            Lists all address books managed by the system.
+            Lists all available address books.
+        Parameters:
+            None
         Return:
             None
         """
         if self.address_books:
-            print("\nAddress Books:")
+            print("Available Address Books:")
             for name in self.address_books:
                 print(f"- {name}")
         else:
@@ -394,12 +348,7 @@ class AddressBookSystem:
         """
         all_contacts = []
         for address_book in self.address_books.values():
-            with open(address_book.file_name, 'r') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                for row in reader:
-                    contact = Contact.from_list(row)
-                    all_contacts.append(contact)
+            all_contacts.extend(address_book.contacts)
 
         all_contacts.sort(key=lambda x: (x.first_name.lower(), x.last_name.lower()))
         print("\nContacts sorted by Name:")
@@ -417,12 +366,7 @@ class AddressBookSystem:
         """
         all_contacts = []
         for address_book in self.address_books.values():
-            with open(address_book.file_name, 'r') as file:
-                reader = csv.reader(file)
-                header = next(reader)
-                for row in reader:
-                    contact = Contact.from_list(row)
-                    all_contacts.append(contact)
+            all_contacts.extend(address_book.contacts)
 
         all_contacts.sort(key=lambda x: x.city.lower())
         print("\nContacts sorted by City:")
@@ -525,7 +469,7 @@ class AddressBookMain:
             if choice == '1':
                 self.add_contact(address_book)
             elif choice == '2':
-                address_book.display_all_contacts()
+                self.display_contacts(address_book)
             elif choice == '3':
                 self.remove_contact(address_book)
             elif choice == '4':
@@ -572,19 +516,35 @@ class AddressBookMain:
         address_book.add_contact(contact)
         print(f"Contact {first_name} {last_name} added to {address_book.file_name}.")
 
+    def display_contacts(self, address_book):
+        """
+        Description:
+            Displays all contacts in the selected address book.
+        Parameters:
+            address_book (AddressBook): The address book whose contacts are to be displayed.
+        Return:
+            None
+        """
+        contacts = address_book.contacts
+        if contacts:
+            print("\nContacts:")
+            for contact in contacts:
+                print(f"Name: {contact.first_name} {contact.last_name}, Address: {contact.address}, City: {contact.city}, State: {contact.state}, Zip: {contact.zip_code}, Phone: {contact.phone}, Email: {contact.email}")
+        else:
+            print("No contacts available.")
+
     def remove_contact(self, address_book):
         """
         Description:
-            Prompts the user for the contact details to remove and attempts to remove the contact from the selected address book.
+            Prompts the user for the name of a contact to remove from the selected address book.
         Parameters:
             address_book (AddressBook): The address book from which the contact will be removed.
         Return:
             None
         """
-        first_name = input("Enter first name of contact to remove: ")
-        last_name = input("Enter last name of contact to remove: ")
-        removed = address_book.remove_contact(first_name, last_name)
-        if removed:
+        first_name = input("Enter first name of the contact to remove: ")
+        last_name = input("Enter last name of the contact to remove: ")
+        if address_book.remove_contact(first_name, last_name):
             print(f"Contact {first_name} {last_name} removed from {address_book.file_name}.")
         else:
             print(f"Contact {first_name} {last_name} not found in {address_book.file_name}.")
@@ -592,34 +552,32 @@ class AddressBookMain:
     def update_contact(self, address_book):
         """
         Description:
-            Prompts the user for the details of the contact to update and applies the changes to the selected address book.
+            Prompts the user for the current and new details of a contact and updates it in the selected address book.
         Parameters:
-            address_book (AddressBook): The address book containing the contact to be updated.
+            address_book (AddressBook): The address book where the contact will be updated.
         Return:
             None
         """
-        first_name = input("Enter first name of contact to update: ")
-        last_name = input("Enter last name of contact to update: ")
+        first_name = input("Enter first name of the contact to update: ")
+        last_name = input("Enter last name of the contact to update: ")
         contact = address_book.find_contact_by_name(first_name, last_name)
         if contact:
-            print(f"Updating contact: {contact.first_name} {contact.last_name}")
-            new_first_name = input(f"Enter new first name (or press Enter to keep '{contact.first_name}'): ") or contact.first_name
-            new_last_name = input(f"Enter new last name (or press Enter to keep '{contact.last_name}'): ") or contact.last_name
-            new_address = input(f"Enter new address (or press Enter to keep '{contact.address}'): ") or contact.address
-            new_city = input(f"Enter new city (or press Enter to keep '{contact.city}'): ") or contact.city
-            new_state = input(f"Enter new state (or press Enter to keep '{contact.state}'): ") or contact.state
-            new_zip_code = input(f"Enter new zip code (or press Enter to keep '{contact.zip_code}'): ") or contact.zip_code
-            new_phone = input(f"Enter new phone number (or press Enter to keep '{contact.phone}'): ") or contact.phone
-            new_email = input(f"Enter new email (or press Enter to keep '{contact.email}'): ") or contact.email
-
+            print("Enter new details (leave blank to keep current value):")
+            new_first_name = input(f"New first name [{contact.first_name}]: ") or contact.first_name
+            new_last_name = input(f"New last name [{contact.last_name}]: ") or contact.last_name
+            new_address = input(f"New address [{contact.address}]: ") or contact.address
+            new_city = input(f"New city [{contact.city}]: ") or contact.city
+            new_state = input(f"New state [{contact.state}]: ") or contact.state
+            new_zip_code = input(f"New zip code [{contact.zip_code}]: ") or contact.zip_code
+            new_phone = input(f"New phone number [{contact.phone}]: ") or contact.phone
+            new_email = input(f"New email [{contact.email}]: ") or contact.email
             new_contact = Contact(new_first_name, new_last_name, new_address, new_city, new_state, new_zip_code, new_phone, new_email)
-            updated = address_book.update_contact(first_name, last_name, new_contact)
-            if updated:
+            if address_book.update_contact(first_name, last_name, new_contact):
                 print(f"Contact {first_name} {last_name} updated.")
             else:
                 print(f"Contact {first_name} {last_name} not found.")
         else:
-            print(f"Contact {first_name} {last_name} not found in {address_book.file_name}.")
+            print(f"Contact {first_name} {last_name} not found.")
 
 
 if __name__ == "__main__":
