@@ -1,0 +1,122 @@
+[
+    {
+        "first_name": "Rajesh",
+        "last_name": "Kumar",
+        "address": "123 MG Road",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411001",
+        "phone": "+91-9823456789",
+        "email": "rajesh.kumar@example.com"
+    },
+    {
+        "first_name": "Sneha",
+        "last_name": "Sharma",
+        "address": "456 Fergusson College Road",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411004",
+        "phone": "+91-9908765432",
+        "email": "sneha.sharma@example.com"
+    },
+    {
+        "first_name": "Amit",
+        "last_name": "Patel",
+        "address": "789 Deccan Gymkhana",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411004",
+        "phone": "+91-9876543210",
+        "email": "amit.patel@example.com"
+    },
+    {
+        "first_name": "Priya",
+        "last_name": "Deshmukh",
+        "address": "321 Baner Road",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411045",
+        "phone": "+91-9865432101",
+        "email": "priya.deshmukh@example.com"
+    },
+    {
+        "first_name": "Ravi",
+        "last_name": "Jain",
+        "address": "654 Kothrud",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411038",
+        "phone": "+91-9998765432",
+        "email": "ravi.jain@example.com"
+    },
+    {
+        "first_name": "Meera",
+        "last_name": "Rao",
+        "address": "987 Viman Nagar",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411014",
+        "phone": "+91-9923456789",
+        "email": "meera.rao@example.com"
+    },
+    {
+        "first_name": "Suresh",
+        "last_name": "Ghosh",
+        "address": "123 Hadapsar",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411028",
+        "phone": "+91-9945678901",
+        "email": "suresh.ghosh@example.com"
+    },
+    {
+        "first_name": "Neha",
+        "last_name": "Singh",
+        "address": "456 Magarpatta",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411028",
+        "phone": "+91-9812345678",
+        "email": "neha.singh@example.com"
+    },
+    {
+        "first_name": "Sanjay",
+        "last_name": "Kale",
+        "address": "789 Wanowrie",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411040",
+        "phone": "+91-9754321098",
+        "email": "sanjay.kale@example.com"
+    },
+    {
+        "first_name": "Anjali",
+        "last_name": "Patil",
+        "address": "321 Aundh",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411007",
+        "phone": "+91-9723456789",
+        "email": "anjali.patil@example.com"
+    },
+    {
+        "first_name": "Aakash",
+        "last_name": "Kulkarni",
+        "address": "654 Shivajinagar",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411005",
+        "phone": "+91-9812345670",
+        "email": "aakash.kulkarni@example.com"
+    },
+    {
+        "first_name": "Pooja",
+        "last_name": "Verma",
+        "address": "987 Camp",
+        "city": "Pune",
+        "state": "Maharashtra",
+        "zip_code": "411001",
+        "phone": "+91-9998765430",
+        "email": "pooja.verma@example.com"
+    }
+]
